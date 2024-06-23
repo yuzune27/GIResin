@@ -25,13 +25,13 @@ class tokenModal(ui.Modal, title="Add Token Form"):  # モーダルを定義
 
     async def on_submit(self, interaction: discord.Interaction):
         data = await hoyouser.user(self.ltuid.value, self.ltoken.value)
-        if data == "Invalid Cookies":
+        if data == "Invalid Cookies":  # 整合性チェック1
             embed = discord.Embed(title="エラー", description="トークンが正しくありません。", color=0xff0000)
             embed.set_footer(text=data)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
-        if data[0].uid == int(self.uid.value):
+        if data[0].uid == int(self.uid.value):  # 整合性チェック2
             try:
                 jsonData = tokendata.open_token()
             except json.decoder.JSONDecodeError:
@@ -79,20 +79,17 @@ async def deltoken(interaction: discord.Interaction, uid: int):
 async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], uid: int):
     uid = str(uid)
     jsonData = tokendata.open_token()
-    if game == "gi" or game == "hsr":
-        if uid in jsonData:
-            name, amount, icon = await hoyouser.daily(game, jsonData[uid]["ltuid"], jsonData[uid]["ltoken"])
-            if "AlreadyClaimed" in str(name):
-                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", color=0x00b0f4)
-            elif "genshinException" in str(name):
-                embed = discord.Embed(title="エラー", description="アカウントはこのゲームに存在しません。", color=0xff0000)
-            else:
-                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} x{amount}```", color=0x00b0f4)
-                embed.set_thumbnail(url=icon)
+    if uid in jsonData:
+        name, amount, icon = await hoyouser.daily(game, jsonData[uid]["ltuid"], jsonData[uid]["ltoken"])
+        if "AlreadyClaimed" in str(name):
+            embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", color=0x00b0f4)
+        elif "genshinException" in str(name):
+            embed = discord.Embed(title="エラー", description="アカウントはこのゲームに存在しません。", color=0xff0000)
         else:
-            embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+            embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} x{amount}```", color=0x00b0f4)
+            embed.set_thumbnail(url=icon)
     else:
-        embed = discord.Embed(title="エラー", description="ゲーム名が正しくありません。", color=0xff0000)
+        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
