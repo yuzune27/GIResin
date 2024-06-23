@@ -1,2 +1,4 @@
 .venv/
 testpy/__pycache__/
+tokenData.json
+__pycache__
