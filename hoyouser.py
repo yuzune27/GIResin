@@ -35,4 +35,4 @@ async def resin(ltuid, ltoken, uid):
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
-        x, y, z = asyncio.run(daily("gi", 174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx"))
+    asyncio.run(user("174808526", "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx"))

@@ -5,6 +5,7 @@ import hoyouser
 import tokendata
 import json
 from datetime import datetime, timedelta
+from typing import Literal
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,6 +36,7 @@ class tokenModal(ui.Modal, title="Add Token Form"):  # モーダルを定義
         newToken = {
                     "ltuid": int(self.ltuid.value),
                     "ltoken": self.ltoken.value,
+                    "dcId": interaction.user.id
                     }
         jsonData[self.uid.value] = newToken
         tokendata.save_token(jsonData)
@@ -47,6 +49,7 @@ async def addtoken(interaction: discord.Interaction):
     await interaction.response.send_modal(modal)
 
 @bot.tree.command(name="deltoken", description="指定したトークンを削除します。")
+@discord.app_commands.describe(uid='登録したユーザIDを指定（9桁または10桁）')
 async def deltoken(interaction: discord.Interaction, uid: int):
     uid = str(uid)
     jsonData = tokendata.open_token()
@@ -60,7 +63,8 @@ async def deltoken(interaction: discord.Interaction, uid: int):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="daily", description="ログインボーナスを取得します。")
-async def daily(interaction: discord.Interaction, game: str, uid: int):
+@discord.app_commands.describe(game='原神="gi", 崩壊：スターレイル="hsr"', uid='登録したユーザIDを指定（9桁または10桁）')
+async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], uid: int):
     uid = str(uid)
     jsonData = tokendata.open_token()
     if game == "gi" or game == "hsr":
@@ -81,6 +85,7 @@ async def daily(interaction: discord.Interaction, game: str, uid: int):
 
 
 @bot.tree.command(name="resin", description="天然樹脂の情報を取得します。")
+@discord.app_commands.describe(uid='登録したユーザIDを指定（9桁または10桁）')
 async def resin(interaction: discord.Interaction, uid: int):
     uid = str(uid)
     jsonData = tokendata.open_token()
