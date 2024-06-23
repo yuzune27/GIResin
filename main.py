@@ -18,10 +18,10 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game("/resin"))
     await bot.tree.sync()
 
-class tokenModal(ui.Modal, title="Add Token Form"):  # モーダルを定義
+class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モーダルを定義
     uid = ui.TextInput(label="UID", placeholder="800000000", min_length=9, max_length=10)
     ltuid = ui.TextInput(label="ltuid", min_length=9, max_length=9)
-    ltoken = ui.TextInput(label="ltoken", min_length=40, max_length=40)
+    ltoken = ui.TextInput(label="ltoken", min_length=40, max_length=40, style=discord.TextStyle.long)
 
     async def on_submit(self, interaction: discord.Interaction):
         data = await hoyouser.user(self.ltuid.value, self.ltoken.value)
