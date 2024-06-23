@@ -10,6 +10,6 @@ async def main():
     except genshin.AlreadyClaimed:
         print("本日のデイリー報酬は既に受取済みです。")
     else:
-        print(f"次の報酬を獲得しました！\n {data.reward.name} x{data.reward.amount}")
+        print(f"次の報酬を獲得しました！\n {data.name} x{data.amount}")
 
 asyncio.run(main())

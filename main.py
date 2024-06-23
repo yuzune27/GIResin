@@ -59,8 +59,29 @@ async def deltoken(interaction: discord.Interaction, uid: int):
         embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
+@bot.tree.command(name="daily", description="ログインボーナスを取得します。")
+async def daily(interaction: discord.Interaction, game: str='原神="gi", 崩壊：スターレイル="hsr"', uid: int="登録したユーザIDを指定（9桁または10桁）"):
+    uid = str(uid)
+    jsonData = tokendata.open_token()
+    if game == "gi" or game == "hsr":
+        if uid in jsonData:
+            name, amount, icon = await hoyouser.daily(game, jsonData[uid]["ltuid"], jsonData[uid]["ltoken"])
+            if "AlreadyClaimed" in str(name):
+                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", color=0x00ff00)
+            elif "genshinException" in str(name):
+                embed = discord.Embed(title="エラー", description="アカウントはこのゲームに存在しません。", color=0xff0000)
+            else:
+                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} {amount}```", color=0x00ff00)
+                embed.set_thumbnail(url=icon)
+        else:
+            embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+    else:
+        embed = discord.Embed(title="エラー", description="ゲーム名が正しくありません。", color=0xff0000)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
 @bot.tree.command(name="resin", description="天然樹脂の情報を取得します。")
-async def resin(interaction: discord.Interaction, uid: int):
+async def resin(interaction: discord.Interaction, uid: int="登録したユーザIDを指定（9桁または10桁）"):
     uid = str(uid)
     jsonData = tokendata.open_token()
     if uid in jsonData:

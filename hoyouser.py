@@ -5,35 +5,36 @@ from datetime import datetime, timedelta
 
 async def user(ltuid, ltoken):
     cookies = {"ltuid": ltuid, "ltoken": ltoken}
-    client = genshin.Client(cookies)
+    client = genshin.Client(cookies, lang="ja-jp")
 
     data = await client.get_record_cards(ltuid)
+    print(data)
 
-async def daily(ltuid, ltoken):
+async def daily(game, ltuid, ltoken):
+    if game == "gi":
+        game = genshin.Game.GENSHIN
+    elif game == "hsr":
+        game = genshin.Game.STARRAIL
     try:
         cookies = {"ltuid": ltuid, "ltoken": ltoken}
-        client = genshin.Client(cookies)
+        client = genshin.Client(cookies, lang="ja-jp")
 
-        data = await client.claim_daily_reward(lang="ja-jp", game="genshin")
-    except genshin.AlreadyClaimed:
-        print("本日のデイリー報酬は既に受取済みです。")
+        data = await client.claim_daily_reward(game=game)
+    except Exception as e:
+        return e.__class__, None, None
     else:
-        print(f"次の報酬を獲得しました！\n {data.reward.name} x{data.reward.amount}")
+        print(f"次の報酬を獲得しました！\n {data.name} x{data.amount}")
+        return data.name, data.amount, data.icon
 
 
 async def resin(ltuid, ltoken, uid):
     cookies = {"ltuid": ltuid, "ltoken": ltoken}
-    client = genshin.Client(cookies)
+    client = genshin.Client(cookies, lang="ja-jp")
 
-    data = await client.get_genshin_notes(uid, lang="ja-jp")
+    data = await client.get_genshin_notes(uid)
+    print(data)
 
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
-    x, y, z = asyncio.run(resin(174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx", "845733927"))
-    dtNow = datetime.now()
-    dtNext = dtNow + timedelta(days=z.days, seconds=z.seconds)
-    m, s = divmod(z.seconds, 60)
-    h, m = divmod(m, 60)
-    print(f"{z.days}日 {h}時間{m}分{s}秒")
-    print(f"{dtNext:%m/%d %H:%M:%S}")
+        x, y, z = asyncio.run(daily("gi", 174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx"))
