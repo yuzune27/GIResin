@@ -24,24 +24,36 @@ class tokenModal(ui.Modal, title="Add Token Form"):  # モーダルを定義
     ltoken = ui.TextInput(label="ltoken", min_length=40, max_length=40)
 
     async def on_submit(self, interaction: discord.Interaction):
-        try:
-            jsonData = tokendata.open_token()
-        except json.decoder.JSONDecodeError:
-            jsonData = {}
+        data = await hoyouser.user(self.ltuid.value, self.ltoken.value)
+        if data == "Invalid Cookies":
+            embed = discord.Embed(title="エラー", description="トークンが正しくありません。", color=0xff0000)
+            embed.set_footer(text=data)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        if data[0].uid == int(self.uid.value):
+            try:
+                jsonData = tokendata.open_token()
+            except json.decoder.JSONDecodeError:
+                jsonData = {}
+            else:
+                if self.uid.value in jsonData:
+                    embed = discord.Embed(title="エラー", description="このUIDは既に登録されています。", color=0xff0000)
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                    return
+            newToken = {
+                        "ltuid": int(self.ltuid.value),
+                        "ltoken": self.ltoken.value,
+                        "dcId": interaction.user.id
+                        }
+            jsonData[self.uid.value] = newToken
+            tokendata.save_token(jsonData)
+            embed = discord.Embed(title="登録完了", description=f"UIDを登録しました。\n`UID: {self.uid.value}`", color=0x00ff00)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
-            if self.uid.value in jsonData:
-                embed = discord.Embed(title="エラー", description="このUIDは既に登録されています。", color=0xff0000)
-                await interaction.response.send_message(embed=embed, ephemeral=True)
-                return
-        newToken = {
-                    "ltuid": int(self.ltuid.value),
-                    "ltoken": self.ltoken.value,
-                    "dcId": interaction.user.id
-                    }
-        jsonData[self.uid.value] = newToken
-        tokendata.save_token(jsonData)
-        embed = discord.Embed(title="登録完了", description=f"UIDを登録しました。\n`UID: {self.uid.value}`", color=0x00ff00)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+            embed = discord.Embed(title="エラー", description="トークンが正しくありません。", color=0xff0000)
+            embed.set_footer(text="Can't view other's profile.")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="addtoken", description="フォームでトークンを追加します。")
 async def addtoken(interaction: discord.Interaction):
@@ -75,7 +87,7 @@ async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], ui
             elif "genshinException" in str(name):
                 embed = discord.Embed(title="エラー", description="アカウントはこのゲームに存在しません。", color=0xff0000)
             else:
-                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} {amount}```", color=0x00b0f4)
+                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} x{amount}```", color=0x00b0f4)
                 embed.set_thumbnail(url=icon)
         else:
             embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)

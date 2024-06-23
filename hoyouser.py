@@ -7,8 +7,11 @@ async def user(ltuid, ltoken):
     cookies = {"ltuid": ltuid, "ltoken": ltoken}
     client = genshin.Client(cookies, lang="ja-jp")
 
-    data = await client.get_record_cards(ltuid)
-    print(data)
+    try:
+        data = await client.get_record_cards(ltuid)
+    except genshin.InvalidCookies as e:
+        return "Invalid Cookies"
+    return data
 
 async def daily(game, ltuid, ltoken):
     if game == "gi":
@@ -35,4 +38,4 @@ async def resin(ltuid, ltoken, uid):
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
-    asyncio.run(user("174808526", "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx"))
+    asyncio.run(resin(174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx", 845733927))
