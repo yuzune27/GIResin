@@ -67,11 +67,11 @@ async def daily(interaction: discord.Interaction, game: str, uid: int):
         if uid in jsonData:
             name, amount, icon = await hoyouser.daily(game, jsonData[uid]["ltuid"], jsonData[uid]["ltoken"])
             if "AlreadyClaimed" in str(name):
-                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", color=0x00b0f4)
+                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", color=0x00ff00)
             elif "genshinException" in str(name):
                 embed = discord.Embed(title="エラー", description="アカウントはこのゲームに存在しません。", color=0xff0000)
             else:
-                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} {amount}```", color=0x00b0f4)
+                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} {amount}```", color=0x00ff00)
                 embed.set_thumbnail(url=icon)
         else:
             embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
@@ -108,27 +108,10 @@ async def resin(interaction: discord.Interaction, uid: int):
         embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-class ConfirmButton(ui.View):
-    def __init__(self):
-        super().__init__()
-
-    @ui.button(label="はい", style=discord.ButtonStyle.green)
-    async def ok(self, interaction: discord.Interaction, button: ui.Button):
-        embed = discord.Embed(title="停止", description="Botを停止しました。", color=0x00ff00)
-        await interaction.response.edit_message(embed=embed, view=None)
-        await bot.close()
-    
-    @ui.button(label="いいえ", style=discord.ButtonStyle.gray)
-    async def no(self, interaction: discord.Interaction, button: ui.Button):
-        embed = discord.Embed(title="キャンセル", description="起動終了をキャンセルしました。", color=0x7d7d7d)
-        await interaction.response.edit_message(embed=embed, view=None)
-
 @bot.tree.command(name="stop", description="Botを停止します（ボット所有者のみ）。")
-@commands.is_owner() 
 async def stop(interaction: discord.Interaction):
-    if interaction.user.id == 577051552582205460:
-        embed = discord.Embed(title="Bot停止", description="Botを停止します。", color=0x00ff00)
-        await interaction.response.send_message(embed=embed, view=ConfirmButton(), ephemeral=True)
+    if commands.is_owner():
+        await bot.close()
     else:
         embed = discord.Embed(title="エラー", description="権限がありません。", color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)

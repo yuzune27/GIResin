@@ -23,6 +23,7 @@ async def daily(game, ltuid, ltoken):
     except Exception as e:
         return e.__class__, None, None
     else:
+        print(f"次の報酬を獲得しました！\n {data.name} x{data.amount}")
         return data.name, data.amount, data.icon
 
 
@@ -31,8 +32,13 @@ async def resin(ltuid, ltoken, uid):
     client = genshin.Client(cookies, lang="ja-jp")
 
     data = await client.get_genshin_notes(uid)
+    print(data)
 
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
         x, y, z = asyncio.run(daily("gi", 174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx"))
+        if x == "<class 'genshin.errors.AlreadyClaimed'>":
+            print("error")
+        print(str(x))
+        print(type(str(x)))
