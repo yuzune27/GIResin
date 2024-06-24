@@ -69,7 +69,7 @@ async def addtoken(interaction: discord.Interaction):
 async def deltoken(interaction: discord.Interaction, uid: int):
     uid = str(uid)
     jsonData = tokendata.open_token()
-    if interaction.user.id == jsonData[uid]["dcId"]
+    if interaction.user.id == jsonData[uid]["dcId"]:
         if uid in jsonData:
             del jsonData[uid]
             tokendata.save_token(jsonData)
