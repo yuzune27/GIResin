@@ -62,7 +62,6 @@ def whichloginEnka(game, uid):
     if game == "gi":
         stat, name, icon = loginEnka(uid)
     elif game == "hsr":
-        loginHSREnka(uid)
         stat, name, icon = loginHSREnka(uid)
     return stat, name, icon
 
