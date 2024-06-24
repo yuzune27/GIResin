@@ -7,6 +7,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Literal
 import asyncio
+import json
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -237,4 +238,7 @@ async def stop(interaction: discord.Interaction):
         embed = discord.Embed(title="エラー", description="権限がありません。", timestamp=datetime.now(), color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-bot.run("MTI1NDA0MDU0Mzk3NDAwMjgxOQ.GWbq1i.gPhecI-QSrWuY3oNOadJaomjZlsOzXUHzvSpn4")
+with open("config.json", "w", encoding="utf-8") as f:
+    config = json.load(f)
+
+bot.run(config["BotToken"])
