@@ -238,7 +238,7 @@ async def stop(interaction: discord.Interaction):
         embed = discord.Embed(title="エラー", description="権限がありません。", timestamp=datetime.now(), color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-with open("config.json", "w", encoding="utf-8") as f:
+with open("config.json", "r", encoding="utf-8") as f:
     config = json.load(f)
 
 bot.run(config["BotToken"])
