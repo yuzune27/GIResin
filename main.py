@@ -50,11 +50,12 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
     ltoken = ui.TextInput(label="ltoken", min_length=40, max_length=40, style=discord.TextStyle.long)
 
     async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True, thinking=True)
         data = await hoyouser.user(self.ltuid.value, self.ltoken.value)
         if data == "Invalid Cookies":  # 整合性チェック1
             embed = discord.Embed(title="エラー", description="トークンが正しくありません。", timestamp=datetime.now(), color=0xff0000)
             embed.set_footer(text=data)
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed)
             return
 
         if data[0].uid == int(self.uid.value) or data[1].uid == int(self.uid.value):  # 整合性チェック2
@@ -65,7 +66,7 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
             else:
                 if self.uid.value in jsonData:
                     embed = discord.Embed(title="エラー", description="このUIDは既に登録されています。", timestamp=datetime.now(), color=0xff0000)
-                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                    await interaction.followup.send(embed=embed)
                     return
             newToken = {
                         "ltuid": int(self.ltuid.value),
@@ -81,11 +82,11 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
                 embed.set_author(name=name, icon_url=icon)
             else:
                 pass
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed)
         else:
             embed = discord.Embed(title="エラー", description="トークンが正しくありません。", timestamp=datetime.now(), color=0xff0000)
             embed.set_footer(text="Can't view other's profile.")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed)
 
 @bot.tree.command(name="addtoken", description="フォームでUIDを追加します。")
 async def addtoken(interaction: discord.Interaction):
@@ -99,7 +100,7 @@ class DelTokenButton(ui.View):
     @ui.button(label="はい", style=discord.ButtonStyle.green)
     async def ok(self, interaction: discord.Interaction, button: ui.Button):
         jsonData = tokendata.open_token()
-        del jsonData[ValueManage.delUID]
+        del jsonData[ValueManage.game][ValueManage.delUID]
         tokendata.save_token(jsonData)
         embed = discord.Embed(title="削除完了", description=f"このUIDの登録を削除しました。\n`UID: {ValueManage.delUID}`", timestamp=datetime.now(), color=0x00ff00)
         await interaction.response.edit_message(embed=embed, view=None)
@@ -115,6 +116,7 @@ async def deltoken(interaction: discord.Interaction, game: Literal["gi", "hsr"],
     await interaction.response.defer(ephemeral=True, thinking=True)
     uid = str(uid)
     ValueManage.delUID = uid
+    ValueManage.game = game
     jsonData = tokendata.open_token()
     idFound = False
     for jsonUID in jsonData[game]:
@@ -126,10 +128,10 @@ async def deltoken(interaction: discord.Interaction, game: Literal["gi", "hsr"],
                     embed.set_author(name=name, icon_url=icon)
                 else:
                     pass
-                await interaction.followup.send(embed=embed, view=DelTokenButton())
+                await interaction.followup.send(embed=embed, ephemeral=True, view=DelTokenButton())
             else:
                 embed = discord.Embed(title="エラー", description="このUIDの削除は、登録したDiscordアカウントのみ可能です。", timestamp=datetime.now(), color=0xff0000)
-                await interaction.followup.send(embed=embed)
+                await interaction.followup.send(embed=embed, ephemeral=True)
             idFound = True
             break
         else:
@@ -137,7 +139,7 @@ async def deltoken(interaction: discord.Interaction, game: Literal["gi", "hsr"],
 
     if not idFound:
         embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", timestamp=datetime.now(), color=0xff0000)
-    await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="daily", description="ログインボーナスを取得します。")
 @discord.app_commands.describe(game='原神="gi", 崩壊：スターレイル="hsr"', uid='登録したユーザIDを指定（9桁または10桁）')
