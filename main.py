@@ -12,6 +12,10 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='$', intents=intents)
 
+def selectID():
+    IDList = []
+
+
 @bot.event  # スラコマを登録
 async def on_ready():
     print("ready!")
@@ -65,14 +69,17 @@ async def addtoken(interaction: discord.Interaction):
 async def deltoken(interaction: discord.Interaction, uid: int):
     uid = str(uid)
     jsonData = tokendata.open_token()
-    if uid in jsonData:
-        del jsonData[uid]
-        tokendata.save_token(jsonData)
-        embed = discord.Embed(title="削除完了", description=f"このUIDの登録を削除しました。\n`UID: {uid}`", color=0x00ff00)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+    if interaction.user.id == jsonData[uid]["dcId"]
+        if uid in jsonData:
+            del jsonData[uid]
+            tokendata.save_token(jsonData)
+            embed = discord.Embed(title="削除完了", description=f"このUIDの登録を削除しました。\n`UID: {uid}`", color=0x00ff00)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        else:
+            embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
     else:
-        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        embed = discord.Embed(title="エラー", description="このUIDの削除は、登録したDiscordアカウントのみ可能です。")
 
 @bot.tree.command(name="daily", description="ログインボーナスを取得します。")
 @discord.app_commands.describe(game='原神="gi", 崩壊：スターレイル="hsr"', uid='登録したユーザIDを指定（9桁または10桁）')
