@@ -59,27 +59,47 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
             embed.set_footer(text="Can't view other's profile.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-@bot.tree.command(name="addtoken", description="フォームでトークンを追加します。")
+@bot.tree.command(name="addtoken", description="フォームでUIDを追加します。")
 async def addtoken(interaction: discord.Interaction):
     modal = tokenModal()
     await interaction.response.send_modal(modal)
 
-@bot.tree.command(name="deltoken", description="指定したトークンを削除します。")
+class ValueManage():
+    delUID = ""
+
+class DelTokenButton(ui.View):
+    def __init__(self):
+        super().__init__()
+
+    @ui.button(label="はい", style=discord.ButtonStyle.green)
+    async def ok(self, interaction: discord.Interaction, button: ui.Button):
+        jsonData = tokendata.open_token()
+        del jsonData[ValueManage.delUID]
+        tokendata.save_token(jsonData)
+        embed = discord.Embed(title="削除完了", description=f"このUIDの登録を削除しました。\n`UID: {ValueManage.delUID}`", color=0x00ff00)
+        await interaction.response.edit_message(embed=embed, view=None)
+    
+    @ui.button(label="いいえ", style=discord.ButtonStyle.gray)
+    async def no(self, interaction: discord.Interaction, button: ui.Button):
+        embed = discord.Embed(title="キャンセル", description="UIDの削除をキャンセルしました。", color=0x7d7d7d)
+        await interaction.response.edit_message(embed=embed, view=None)
+
+@bot.tree.command(name="deltoken", description="指定したUIDを削除します。")
 @discord.app_commands.describe(uid='登録したユーザIDを指定（9桁または10桁）')
 async def deltoken(interaction: discord.Interaction, uid: int):
     uid = str(uid)
+    ValueManage.delUID = uid
     jsonData = tokendata.open_token()
-    if interaction.user.id == jsonData[uid]["dcId"]:
-        if uid in jsonData:
-            del jsonData[uid]
-            tokendata.save_token(jsonData)
-            embed = discord.Embed(title="削除完了", description=f"このUIDの登録を削除しました。\n`UID: {uid}`", color=0x00ff00)
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+    if uid in jsonData:
+        if interaction.user.id == jsonData[uid]["dcId"]:
+            embed = discord.Embed(title="削除確認", description=f"このUIDを削除しますか？\n`UID: {uid}`", color=0x00ff00)
+            await interaction.response.send_message(embed=embed, view=DelTokenButton(), ephemeral=True)
         else:
-            embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+            embed = discord.Embed(title="エラー", description="このUIDの削除は、登録したDiscordアカウントのみ可能です。", color=0xff0000)
             await interaction.response.send_message(embed=embed, ephemeral=True)
     else:
-        embed = discord.Embed(title="エラー", description="このUIDの削除は、登録したDiscordアカウントのみ可能です。")
+        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @bot.tree.command(name="daily", description="ログインボーナスを取得します。")
 @discord.app_commands.describe(game='原神="gi", 崩壊：スターレイル="hsr"', uid='登録したユーザIDを指定（9桁または10桁）')
@@ -129,7 +149,7 @@ async def resin(interaction: discord.Interaction, uid: int):
         embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-class ConfirmButton(ui.View):
+class BotStopButton(ui.View):
     def __init__(self):
         super().__init__()
 
@@ -149,7 +169,7 @@ class ConfirmButton(ui.View):
 async def stop(interaction: discord.Interaction):
     if interaction.user.id == 577051552582205460:
         embed = discord.Embed(title="Bot停止", description="Botを停止します。", color=0x00ff00)
-        await interaction.response.send_message(embed=embed, view=ConfirmButton(), ephemeral=True)
+        await interaction.response.send_message(embed=embed, view=BotStopButton(), ephemeral=True)
     else:
         embed = discord.Embed(title="エラー", description="権限がありません。", color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)
