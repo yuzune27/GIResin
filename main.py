@@ -53,7 +53,7 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
     async def on_submit(self, interaction: discord.Interaction):
         data = await hoyouser.user(self.ltuid.value, self.ltoken.value)
         if data == "Invalid Cookies":  # 整合性チェック1
-            embed = discord.Embed(title="エラー", description="トークンが正しくありません。", color=0xff0000)
+            embed = discord.Embed(title="エラー", description="トークンが正しくありません。", timestamp=datetime.now(), color=0xff0000)
             embed.set_footer(text=data)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
@@ -65,7 +65,7 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
                 jsonData = {}
             else:
                 if self.uid.value in jsonData:
-                    embed = discord.Embed(title="エラー", description="このUIDは既に登録されています。", color=0xff0000)
+                    embed = discord.Embed(title="エラー", description="このUIDは既に登録されています。", timestamp=datetime.now(), color=0xff0000)
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                     return
             newToken = {
@@ -75,7 +75,7 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
                         }
             jsonData[ValueManage.game][self.uid.value] = newToken
             tokendata.save_token(jsonData)
-            embed = discord.Embed(title="登録完了", description=f"UIDを登録しました。\n`UID: {self.uid.value}`", color=0x00ff00)
+            embed = discord.Embed(title="登録完了", description=f"UIDを登録しました。\n`UID: {self.uid.value}`", timestamp=datetime.now(), color=0x00ff00)
 
             stat, name, icon = hoyouser.whichloginEnka(ValueManage.game, int(self.uid.value))
             if stat == 200:
@@ -84,7 +84,7 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
                 pass
             await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
-            embed = discord.Embed(title="エラー", description="トークンが正しくありません。", color=0xff0000)
+            embed = discord.Embed(title="エラー", description="トークンが正しくありません。", timestamp=datetime.now(), color=0xff0000)
             embed.set_footer(text="Can't view other's profile.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -102,12 +102,12 @@ class DelTokenButton(ui.View):
         jsonData = tokendata.open_token()
         del jsonData[ValueManage.delUID]
         tokendata.save_token(jsonData)
-        embed = discord.Embed(title="削除完了", description=f"このUIDの登録を削除しました。\n`UID: {ValueManage.delUID}`", color=0x00ff00)
+        embed = discord.Embed(title="削除完了", description=f"このUIDの登録を削除しました。\n`UID: {ValueManage.delUID}`", timestamp=datetime.now(), color=0x00ff00)
         await interaction.response.edit_message(embed=embed, view=None)
     
     @ui.button(label="いいえ", style=discord.ButtonStyle.gray)
     async def no(self, interaction: discord.Interaction, button: ui.Button):
-        embed = discord.Embed(title="キャンセル", description="UIDの削除をキャンセルしました。", color=0x7d7d7d)
+        embed = discord.Embed(title="キャンセル", description="UIDの削除をキャンセルしました。", timestamp=datetime.now(), color=0x7d7d7d)
         await interaction.response.edit_message(embed=embed, view=None)
 
 @bot.tree.command(name="deltoken", description="指定したUIDを削除します。")
@@ -121,7 +121,7 @@ async def deltoken(interaction: discord.Interaction, game: Literal["gi", "hsr"],
     for jsonUID in jsonData[game]:
         if uid == jsonUID:
             if interaction.user.id == jsonData[game][uid]["dcId"]:
-                embed = discord.Embed(title="削除確認", description=f"このUIDを削除しますか？\n`UID: {uid}`", color=0x00ff00)
+                embed = discord.Embed(title="削除確認", description=f"このUIDを削除しますか？\n`UID: {uid}`", timestamp=datetime.now(), color=0x00ff00)
                 stat, name, icon = hoyouser.whichloginEnka(game, uid)
                 if stat == 200:
                     embed.set_author(name=name, icon_url=icon)
@@ -129,7 +129,7 @@ async def deltoken(interaction: discord.Interaction, game: Literal["gi", "hsr"],
                     pass
                 await interaction.followup.send(embed=embed, view=DelTokenButton())
             else:
-                embed = discord.Embed(title="エラー", description="このUIDの削除は、登録したDiscordアカウントのみ可能です。", color=0xff0000)
+                embed = discord.Embed(title="エラー", description="このUIDの削除は、登録したDiscordアカウントのみ可能です。", timestamp=datetime.now(), color=0xff0000)
                 await interaction.followup.send(embed=embed)
             idFound = True
             break
@@ -137,7 +137,7 @@ async def deltoken(interaction: discord.Interaction, game: Literal["gi", "hsr"],
             pass
 
     if not idFound:
-        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", timestamp=datetime.now(), color=0xff0000)
     await interaction.followup.send(embed=embed)
 
 @bot.tree.command(name="daily", description="ログインボーナスを取得します。")
@@ -151,9 +151,9 @@ async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], ui
         if uid == jsonUID:
             name, amount, icon = await hoyouser.daily(game, jsonData[game][uid]["ltuid"], jsonData[game][uid]["ltoken"])
             if "AlreadyClaimed" in str(name):
-                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", color=0x00b0f4)
+                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", timestamp=datetime.now(), color=0x00b0f4)
             else:
-                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} x{amount}```", color=0x00b0f4)
+                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} x{amount}```", timestamp=datetime.now(), color=0x00b0f4)
                 embed.set_thumbnail(url=icon)
 
             stat, name, icon = hoyouser.whichloginEnka(game, uid)
@@ -161,11 +161,12 @@ async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], ui
                 embed.set_author(name=name, icon_url=icon)
             else:
                 pass
+            embed.set_footer(text=f"UID: {uid}")
             idFound = True
             break
 
     if not idFound:
-        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", timestamp=datetime.now(), color=0xff0000)
     await interaction.followup.send(embed=embed)
 
 
@@ -201,6 +202,7 @@ async def resin(interaction: discord.Interaction, uid: int):
                 embed.set_author(name=name, icon_url=icon)
             else:
                 pass
+            embed.set_footer(text=f"UID: {uid}")
             idFound = True
             break
         else:
@@ -215,13 +217,13 @@ class BotStopButton(ui.View):
 
     @ui.button(label="はい", style=discord.ButtonStyle.green)
     async def ok(self, interaction: discord.Interaction, button: ui.Button):
-        embed = discord.Embed(title="停止", description="Botを停止しました。", color=0x00ff00)
+        embed = discord.Embed(title="停止", description="Botを停止しました。", timestamp=datetime.now(), color=0x00ff00)
         await interaction.response.edit_message(embed=embed, view=None)
         await bot.close()
     
     @ui.button(label="いいえ", style=discord.ButtonStyle.gray)
     async def no(self, interaction: discord.Interaction, button: ui.Button):
-        embed = discord.Embed(title="キャンセル", description="起動終了をキャンセルしました。", color=0x7d7d7d)
+        embed = discord.Embed(title="キャンセル", description="起動終了をキャンセルしました。", timestamp=datetime.now(), color=0x7d7d7d)
         await interaction.response.edit_message(embed=embed, view=None)
 
 @bot.tree.command(name="stop", description="Botを停止します（ボット所有者のみ）。")
@@ -231,7 +233,7 @@ async def stop(interaction: discord.Interaction):
         embed = discord.Embed(title="Bot停止", description="Botを停止します。", color=0x00ff00)
         await interaction.response.send_message(embed=embed, view=BotStopButton(), ephemeral=True)
     else:
-        embed = discord.Embed(title="エラー", description="権限がありません。", color=0xff0000)
+        embed = discord.Embed(title="エラー", description="権限がありません。", timestamp=datetime.now(), color=0xff0000)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 bot.run("MTI1NDA0MDU0Mzk3NDAwMjgxOQ.GWbq1i.gPhecI-QSrWuY3oNOadJaomjZlsOzXUHzvSpn4")
