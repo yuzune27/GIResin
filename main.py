@@ -69,13 +69,11 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                     return
             newToken = {
-                        self.uid.value: {
-                            "ltuid": int(self.ltuid.value),
-                            "ltoken": self.ltoken.value,
-                            "dcId": interaction.user.id
-                            }
+                        "ltuid": int(self.ltuid.value),
+                        "ltoken": self.ltoken.value,
+                        "dcId": interaction.user.id
                         }
-            jsonData[ValueManage.game] = newToken
+            jsonData[ValueManage.game][self.uid.value] = newToken
             tokendata.save_token(jsonData)
             embed = discord.Embed(title="登録完了", description=f"UIDを登録しました。\n`UID: {self.uid.value}`", color=0x00ff00)
 
