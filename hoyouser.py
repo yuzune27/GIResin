@@ -1,6 +1,7 @@
 import genshin
 import asyncio
 from datetime import datetime, timedelta
+import requests
 
 
 async def user(ltuid, ltoken):
@@ -12,6 +13,24 @@ async def user(ltuid, ltoken):
     except genshin.InvalidCookies as e:
         return "Invalid Cookies"
     return data
+
+def loginEnka(uid):
+    url = f"https://enka.network/api/uid/{uid}?info"
+    res = requests.get(url)
+    if res.status_code == 200:
+        jsonData = res.json()
+        name = jsonData["playerInfo"]["nickname"]
+        iconID = jsonData["playerInfo"]["profilePicture"]["id"]
+
+        pfps = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/pfps.json"
+        res2 = requests.get(pfps).json()
+        icon = res2[str(iconID)]["iconPath"]
+
+        iconUrl = f"https://enka.network/ui/{icon}.png"
+
+        return res.status_code, name, iconUrl
+    else:
+        return res.status_code, None, None
 
 async def daily(game, ltuid, ltoken):
     if game == "gi":
@@ -38,4 +57,7 @@ async def resin(ltuid, ltoken, uid):
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
-    asyncio.run(resin(174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx", 845733927))
+    x, y, z = loginEnka(845733927)
+    print(x)
+    print(y)
+    print(z)

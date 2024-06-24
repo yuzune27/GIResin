@@ -6,6 +6,7 @@ import tokendata
 import json
 from datetime import datetime, timedelta
 from typing import Literal
+import asyncio
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -21,6 +22,28 @@ async def on_ready():
     print("ready!")
     await bot.change_presence(activity=discord.Game("/resin"))
     await bot.tree.sync()
+
+class ValueManage():
+    delUID = ""
+    game = ""
+
+class SelectGame(ui.View):
+
+    def __init__(self):
+        super().__init__()
+
+    @ui.select(
+        placeholder="ゲームを選択",
+        options=[
+            discord.SelectOption(label="原神", value="gi"),
+            discord.SelectOption(label="崩壊：スターレイル", value="hsr")
+        ]
+    )
+    async def selectMenu(self, interaction: discord.Interaction, select: ui.Select):
+        ValueManage.game = select.values[0]
+        await interaction.response.send_modal(tokenModal())
+        embed = discord.Embed(title="フォーム入力", description="フォームでトークンを登録してください。", color=0x00ff00)
+        await interaction.edit_original_response(embed=embed, view=None)
 
 class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モーダルを定義
     uid = ui.TextInput(label="UID", placeholder="800000000", min_length=9, max_length=10)
@@ -46,11 +69,13 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                     return
             newToken = {
-                        "ltuid": int(self.ltuid.value),
-                        "ltoken": self.ltoken.value,
-                        "dcId": interaction.user.id
+                        self.uid.value: {
+                            "ltuid": int(self.ltuid.value),
+                            "ltoken": self.ltoken.value,
+                            "dcId": interaction.user.id
+                            }
                         }
-            jsonData[self.uid.value] = newToken
+            jsonData[ValueManage.game] = newToken
             tokendata.save_token(jsonData)
             embed = discord.Embed(title="登録完了", description=f"UIDを登録しました。\n`UID: {self.uid.value}`", color=0x00ff00)
             await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -61,11 +86,8 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
 
 @bot.tree.command(name="addtoken", description="フォームでUIDを追加します。")
 async def addtoken(interaction: discord.Interaction):
-    modal = tokenModal()
-    await interaction.response.send_modal(modal)
-
-class ValueManage():
-    delUID = ""
+    embed = discord.Embed(title="トークン登録", description="ゲームを選択してください。", color=0x00ff00)
+    await interaction.response.send_message(embed=embed, view=SelectGame())
 
 class DelTokenButton(ui.View):
     def __init__(self):
