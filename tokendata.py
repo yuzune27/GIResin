@@ -12,12 +12,7 @@ def open_token():
     
 
 if __name__ == "__main__":
-    save_token(x)
-    text = str(845733927)
     jsonData = open_token()
-    print(open_token())
-    if str(text) in jsonData:
-        del jsonData[text]
-        save_token(jsonData)
-    else:
-        pass
+    for jsonUID in jsonData["gi"]:
+        print(jsonUID)
+        print(type(jsonUID))

@@ -20,17 +20,51 @@ def loginEnka(uid):
     if res.status_code == 200:
         jsonData = res.json()
         name = jsonData["playerInfo"]["nickname"]
-        iconID = jsonData["playerInfo"]["profilePicture"]["id"]
+        try:
+            iconID = jsonData["playerInfo"]["profilePicture"]["id"]
+        except KeyError:
+            iconID = jsonData["playerInfo"]["profilePicture"]["avatarId"]
+            chara = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/characters.json"
+            res2 = requests.get(chara).json()
+            icon = res2[str(iconID)]["SideIconName"]
+            icon = str(icon).replace("UI_AvatarIcon_Side", "UI_AvatarIcon")
+        else:
+            pfps = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/pfps.json"
+            res2 = requests.get(pfps).json()
+            icon = res2[str(iconID)]["iconPath"]
 
-        pfps = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/pfps.json"
-        res2 = requests.get(pfps).json()
-        icon = res2[str(iconID)]["iconPath"]
 
         iconUrl = f"https://enka.network/ui/{icon}.png"
 
         return res.status_code, name, iconUrl
     else:
         return res.status_code, None, None
+    
+def loginHSREnka(uid):
+    url = f"https://enka.network/api/hsr/uid/{uid}"
+    res = requests.get(url)
+    if res.status_code == 200:
+        jsonData = res.json()
+        name = jsonData["detailInfo"]["nickname"]
+        iconID = jsonData["detailInfo"]["headIcon"]
+
+        avatars = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/hsr/honker_avatars.json"
+        res2 = requests.get(avatars).json()
+        icon = res2[str(iconID)]["Icon"]
+
+        iconUrl = f"https://enka.network/ui/hsr/{icon}"
+
+        return res.status_code, name, iconUrl
+    else:
+        return res.status_code, None, None
+    
+def whichloginEnka(game, uid):
+    if game == "gi":
+        stat, name, icon = loginEnka(uid)
+    elif game == "hsr":
+        loginHSREnka(uid)
+        stat, name, icon = loginHSREnka(uid)
+    return stat, name, icon
 
 async def daily(game, ltuid, ltoken):
     if game == "gi":
@@ -57,7 +91,5 @@ async def resin(ltuid, ltoken, uid):
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
-    x, y, z = loginEnka(845733927)
-    print(x)
-    print(y)
-    print(z)
+    data = asyncio.run(user(174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx"))
+    print(data[1])
