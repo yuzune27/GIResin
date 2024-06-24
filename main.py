@@ -28,7 +28,6 @@ class ValueManage():
     game = ""
 
 class SelectGame(ui.View):
-
     def __init__(self):
         super().__init__()
 
