@@ -48,7 +48,7 @@ class SelectGame(ui.View):
 class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モーダルを定義
     uid = ui.TextInput(label="UID", placeholder="800000000", min_length=9, max_length=10)
     ltuid = ui.TextInput(label="ltuid_v2", min_length=9, max_length=9)
-    ltoken = ui.TextInput(label="ltoken_v2", min_length=225, max_length=225, style=discord.TextStyle.long)
+    ltoken = ui.TextInput(label="ltoken_v2", min_length=200, max_length=300, style=discord.TextStyle.long)
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
