@@ -47,8 +47,8 @@ class SelectGame(ui.View):
 
 class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モーダルを定義
     uid = ui.TextInput(label="UID", placeholder="800000000", min_length=9, max_length=10)
-    ltuid = ui.TextInput(label="ltuid", min_length=9, max_length=9)
-    ltoken = ui.TextInput(label="ltoken", min_length=40, max_length=40, style=discord.TextStyle.long)
+    ltuid = ui.TextInput(label="ltuid_v2", min_length=9, max_length=9)
+    ltoken = ui.TextInput(label="ltoken_v2", min_length=225, max_length=225, style=discord.TextStyle.long)
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
@@ -70,8 +70,8 @@ class tokenModal(ui.Modal, title="トークン入力フォーム"):  # モータ
                     await interaction.followup.send(embed=embed)
                     return
             newToken = {
-                        "ltuid": int(self.ltuid.value),
-                        "ltoken": self.ltoken.value,
+                        "ltuid_v2": int(self.ltuid.value),
+                        "ltoken_v2": self.ltoken.value,
                         "dcId": interaction.user.id
                         }
             jsonData[ValueManage.game][self.uid.value] = newToken
@@ -151,7 +151,7 @@ async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], ui
     idFound = False
     for jsonUID in jsonData[game]:
         if uid == jsonUID:
-            name, amount, icon = await hoyouser.daily(game, jsonData[game][uid]["ltuid"], jsonData[game][uid]["ltoken"])
+            name, amount, icon = await hoyouser.daily(game, jsonData[game][uid]["ltuid_v2"], jsonData[game][uid]["ltoken_v2"])
             if "AlreadyClaimed" in str(name):
                 embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", timestamp=datetime.now(), color=0x00b0f4)
             else:
@@ -181,7 +181,7 @@ async def resin(interaction: discord.Interaction, uid: int):
     idFound = False
     for jsonUID in jsonData["gi"]:
         if uid == jsonUID:
-            cResin, mResin, reResin = await hoyouser.resin(jsonData["gi"][uid]["ltuid"], jsonData["gi"][uid]["ltoken"], uid)
+            cResin, mResin, reResin = await hoyouser.resin(jsonData["gi"][uid]["ltuid_v2"], jsonData["gi"][uid]["ltoken_v2"], uid)
             if cResin == mResin:
                 bemResin = "全回復しました。"
             else:

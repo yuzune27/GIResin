@@ -5,7 +5,7 @@ import requests
 
 
 async def user(ltuid, ltoken):
-    cookies = {"ltuid": ltuid, "ltoken": ltoken}
+    cookies = {"ltuid_v2": ltuid, "ltoken_v2": ltoken}
     client = genshin.Client(cookies, lang="ja-jp")
 
     try:
@@ -71,7 +71,7 @@ async def daily(game, ltuid, ltoken):
     elif game == "hsr":
         game = genshin.Game.STARRAIL
     try:
-        cookies = {"ltuid": ltuid, "ltoken": ltoken}
+        cookies = {"ltuid_v2": ltuid, "ltoken_v2": ltoken}
         client = genshin.Client(cookies, lang="ja-jp")
 
         data = await client.claim_daily_reward(game=game)
@@ -82,7 +82,7 @@ async def daily(game, ltuid, ltoken):
 
 
 async def resin(ltuid, ltoken, uid):
-    cookies = {"ltuid": ltuid, "ltoken": ltoken}
+    cookies = {"ltuid_v2": ltuid, "ltoken_v2": ltoken}
     client = genshin.Client(cookies, lang="ja-jp")
 
     data = await client.get_genshin_notes(uid)
