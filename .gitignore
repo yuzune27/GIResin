@@ -6,3 +6,7 @@ testpy/testcookie.py
 .idea/
 .vscode/
 config.json
+build/
+*.pyd
+*.c
+setup.py
