@@ -195,7 +195,7 @@ async def resin(interaction: discord.Interaction, uid: int):
                                 timestamp=datetime.now())
 
             embed.add_field(name="現在の天然樹脂",
-                            value=f"```{data.current_resin}/{data.max_resin,}```",
+                            value=f"```{data.current_resin}/{data.max_resin}```",
                             inline=False)
             embed.add_field(name="回復残り時間",
                             value=f"```あと{data.remaining_resin_recovery_time}\n({bemResin})```",
@@ -224,7 +224,7 @@ async def tbp(interaction: discord.Interaction, uid: int):
     idFound = False
     for jsonUID in jsonData["hsr"]:
         if uid == jsonUID:
-            data = await hoyouser.hsrNotes(jsonData["hsr"][uid]["ltuid_v2"], jsonData["hsr"]["ltoken_v2"], uid)
+            data = await hoyouser.hsrNotes(jsonData["hsr"][uid]["ltuid_v2"], jsonData["hsr"][uid]["ltoken_v2"], uid)
             if data.current_stamina == data.max_stamina:
                 bemTbp = "全回復しました。"
             else:
