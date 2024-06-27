@@ -183,7 +183,7 @@ async def resin(interaction: discord.Interaction, uid: int):
     idFound = False
     for jsonUID in jsonData["gi"]:
         if uid == jsonUID:
-            data = await hoyouser.resin(jsonData["gi"][uid]["ltuid_v2"], jsonData["gi"][uid]["ltoken_v2"], uid)
+            data = await hoyouser.genshinNotes(jsonData["gi"][uid]["ltuid_v2"], jsonData["gi"][uid]["ltoken_v2"], uid)
             if data.current_resin == data.max_resin:
                 bemResin = "全回復しました。"
             else:
