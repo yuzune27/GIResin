@@ -152,7 +152,7 @@ async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], ui
     jsonData = tokendata.open_token()
     idFound = False
     if game == "gi":
-        embedColor = 0xfffcf3
+        embedColor = 0xe5be9b
     elif game == "hsr":
         embedColor = 0x7ef6ff
 
@@ -196,7 +196,7 @@ async def resin(interaction: discord.Interaction, uid: int):
                 bemDt = dtNow + timedelta(days=data.remaining_resin_recovery_time.days, seconds=data.remaining_resin_recovery_time.seconds)
                 bemResin = f"{bemDt:%m/%d %H:%M:%S}に全回復"
             embed = discord.Embed(title="天然樹脂情報",
-                                colour=0xfffcf3,
+                                colour=0xe5be9b,
                                 timestamp=datetime.now())
 
             embed.add_field(name="現在の天然樹脂",
