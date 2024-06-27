@@ -158,7 +158,7 @@ async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], ui
 
     for jsonUID in jsonData[game]:
         if uid == jsonUID:
-            name, amount, icon = await hoyouser.daily(game, jsonData[game][uid]["ltuid_v2"], jsonData[game][uid]["ltoken_v2"])
+            name, amount, icon = await hoyouser.daily(game, jsonData[game][uid]["ltuid_v2"], jsonData[game][uid]["ltmid_v2"], jsonData[game][uid]["ltoken_v2"])
             if "AlreadyClaimed" in str(name):
                 embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", timestamp=datetime.now(), color=embedColor)
             else:
