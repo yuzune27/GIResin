@@ -125,7 +125,7 @@ async def deltoken(interaction: discord.Interaction, game: Literal["gi", "hsr"],
     for jsonUID in jsonData[game]:
         if uid == jsonUID:
             if interaction.user.id == jsonData[game][uid]["dcId"]:
-                embed = discord.Embed(title="削除確認", description=f"このUIDを削除しますか？\n`UID: {uid}`", timestamp=datetime.now(), color=0x00ff00)
+                embed = discord.Embed(title="削除確認", description=f"このUIDを削除しますか？\n`UID: {uid}`", color=0x00ff00)
                 stat, name, icon = hoyouser.whichloginEnka(game, uid)
                 if stat == 200:
                     embed.set_author(name=name, icon_url=icon)
@@ -212,7 +212,7 @@ async def resin(interaction: discord.Interaction, uid: int):
         else:
             pass
     if not idFound:
-        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", color=0xff0000)
+        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", timestamp=datetime.now(), color=0xff0000)
     await interaction.followup.send(embed=embed)
 
 class BotStopButton(ui.View):

@@ -90,5 +90,4 @@ async def resin(ltuid, ltoken, uid):
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
-    n, a, i = asyncio.run(daily("hsr", 174808526, "1nf9o1hbex_hy", "v2_CAISDGM5b3FhcTNzM2d1OBokOTcxNjlhNTQtODAwNC00NzczLWJhYzUtNTFkNDg0MzA4OGZmIIvw6bMGKPbS5ZQEMM67rVNCC2Jic19vdmVyc2Vh.C3h6ZgAAAAAB.MEYCIQD_-Q_ATHuvkGljKCSj3tFfHy8RgYvQAhDAHWVJoKsd8wIhALgGnPrj_-TrTbuM3DwB0VBBxbmHZTfvw_1wZuy__CGh"))
-    print(n, a, i)
+    print("---Test Space---")
