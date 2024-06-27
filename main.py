@@ -215,6 +215,48 @@ async def resin(interaction: discord.Interaction, uid: int):
         embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", timestamp=datetime.now(), color=0xff0000)
     await interaction.followup.send(embed=embed)
 
+@bot.tree.command(name="tbp", description="開拓力の情報を取得します。")  # Trailbraze Power
+@discord.app_commands.describe(uid='登録したユーザIDを指定（9桁または10桁）')
+async def tbp(interaction: discord.Interaction, uid: int):
+    await interaction.response.defer(ephemeral=True, thinking=True)
+    uid = str(uid)
+    jsonData = tokendata.open_token()
+    idFound = False
+    for jsonUID in jsonData["hsr"]:
+        if uid == jsonUID:
+            data = await hoyouser.hsrNotes(jsonData["hsr"][uid]["ltuid_v2"], jsonData["gi"]["hsr"]["ltoken_v2"], uid)
+            if data.current_stamina == data.max_stamina:
+                bemTbp = "全回復しました。"
+            else:
+                dtNow = datetime.now()
+                bemDt = dtNow + timedelta(days=data.stamina_recover_time.days, seconds=data.stamina_recover_time.seconds)
+                bemTbp = f"{bemDt:%m/%d %H:%M:%S}に全回復"
+            embed = discord.Embed(title="開拓力情報",
+                                colour=0x00b0f4,
+                                timestamp=datetime.now())
+
+            embed.add_field(name="現在の開拓力",
+                            value=f"```{data.current_stamina}/{data.max_stamina}```",
+                            inline=False)
+            embed.add_field(name="回復残り時間",
+                            value=f"```あと{data.stamina_recover_time}\n({bemTbp})```",
+                            inline=False)
+            embed.set_thumbnail(url="https://static.wikia.nocookie.net/houkai-star-rail/images/7/7a/Item_Trailblaze_Power.png/")
+            stat, name, icon = hoyouser.loginHSREnka(uid)
+            if stat == 200:
+                embed.set_author(name=name, icon_url=icon)
+            else:
+                pass
+            embed.set_footer(text=f"UID: {uid}")
+            idFound = True
+            break
+        else:
+            pass
+    if not idFound:
+        embed = discord.Embed(title="エラー", description="このUIDは登録されていません。", timestamp=datetime.now(), color=0xff0000)
+    await interaction.followup.send(embed=embed)
+
+
 class BotStopButton(ui.View):
     def __init__(self):
         super().__init__()

@@ -2,6 +2,7 @@ import genshin
 import asyncio
 from datetime import datetime, timedelta
 import requests
+import json
 
 
 async def user(ltuid, ltoken):
@@ -89,5 +90,20 @@ async def genshinNotes(ltuid, ltoken, uid):
 
     return data
 
+
+async def hsrNotes(ltuid, ltoken, uid):
+    cookies = {"ltuid_v2": ltuid, "ltoken_v2": ltoken}
+    client = genshin.Client(cookies, lang="ja-jp")
+
+    data = await client.get_starrail_notes(uid)
+
+    return data
+
 if __name__ == "__main__":
     print("---Test Space---")
+    with open("config.json", "r", encoding="utf-8") as f:
+        config = json.load(f)
+
+    hoyoID = config["hoyoID"]
+    data = asyncio.run(hsrNotes(hoyoID["ltuid_v2"], hoyoID["ltoken_v2"], hoyoID["uid"][1]))
+    print(data)
