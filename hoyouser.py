@@ -65,13 +65,13 @@ def whichloginEnka(game, uid):
         stat, name, icon = loginHSREnka(uid)
     return stat, name, icon
 
-async def daily(game, ltuid, ltoken):
+async def daily(game, ltuid, ltmid, ltoken):
     if game == "gi":
         game = genshin.Game.GENSHIN
     elif game == "hsr":
         game = genshin.Game.STARRAIL
     try:
-        cookies = {"ltuid_v2": ltuid, "ltoken_v2": ltoken}
+        cookies = {"ltuid_v2": ltuid, "ltmid_v2": ltmid, "ltoken_v2": ltoken}
         client = genshin.Client(cookies, lang="ja-jp")
 
         data = await client.claim_daily_reward(game=game)
@@ -90,5 +90,5 @@ async def resin(ltuid, ltoken, uid):
     return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
 
 if __name__ == "__main__":
-    data = asyncio.run(user(174808526, "ggetQDnMHo4Mt25qoeJi5pkdtWRkm4nHm8F3IZNx"))
-    print(data[1])
+    n, a, i = asyncio.run(daily("hsr", 174808526, "1nf9o1hbex_hy", "v2_CAISDGM5b3FhcTNzM2d1OBokOTcxNjlhNTQtODAwNC00NzczLWJhYzUtNTFkNDg0MzA4OGZmIIvw6bMGKPbS5ZQEMM67rVNCC2Jic19vdmVyc2Vh.C3h6ZgAAAAAB.MEYCIQD_-Q_ATHuvkGljKCSj3tFfHy8RgYvQAhDAHWVJoKsd8wIhALgGnPrj_-TrTbuM3DwB0VBBxbmHZTfvw_1wZuy__CGh"))
+    print(n, a, i)
