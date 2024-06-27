@@ -81,13 +81,13 @@ async def daily(game, ltuid, ltmid, ltoken):
         return data.name, data.amount, data.icon
 
 
-async def resin(ltuid, ltoken, uid):
+async def genshinNotes(ltuid, ltoken, uid):
     cookies = {"ltuid_v2": ltuid, "ltoken_v2": ltoken}
     client = genshin.Client(cookies, lang="ja-jp")
 
     data = await client.get_genshin_notes(uid)
 
-    return data.current_resin, data.max_resin, data.remaining_resin_recovery_time
+    return data
 
 if __name__ == "__main__":
     print("---Test Space---")

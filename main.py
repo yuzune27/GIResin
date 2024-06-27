@@ -183,22 +183,22 @@ async def resin(interaction: discord.Interaction, uid: int):
     idFound = False
     for jsonUID in jsonData["gi"]:
         if uid == jsonUID:
-            cResin, mResin, reResin = await hoyouser.resin(jsonData["gi"][uid]["ltuid_v2"], jsonData["gi"][uid]["ltoken_v2"], uid)
-            if cResin == mResin:
+            data = await hoyouser.resin(jsonData["gi"][uid]["ltuid_v2"], jsonData["gi"][uid]["ltoken_v2"], uid)
+            if data.current_resin == data.max_resin:
                 bemResin = "全回復しました。"
             else:
                 dtNow = datetime.now()
-                bemDt = dtNow + timedelta(days=reResin.days, seconds=reResin.seconds)
+                bemDt = dtNow + timedelta(days=data.remaining_resin_recovery_time.days, seconds=data.remaining_resin_recovery_time.seconds)
                 bemResin = f"{bemDt:%m/%d %H:%M:%S}に全回復"
             embed = discord.Embed(title="天然樹脂情報",
                                 colour=0x00b0f4,
                                 timestamp=datetime.now())
 
             embed.add_field(name="現在の天然樹脂",
-                            value=f"```{cResin}/{mResin}```",
+                            value=f"```{data.current_resin}/{data.max_resin,}```",
                             inline=False)
             embed.add_field(name="回復残り時間",
-                            value=f"```あと{reResin}\n({bemResin})```",
+                            value=f"```あと{data.remaining_resin_recovery_time}\n({bemResin})```",
                             inline=False)
             embed.set_thumbnail(url="https://static.wikia.nocookie.net/gensin-impact/images/3/35/Item_Fragile_Resin.png/")
             stat, name, icon = hoyouser.loginEnka(uid)
