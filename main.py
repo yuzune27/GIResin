@@ -224,7 +224,7 @@ async def tbp(interaction: discord.Interaction, uid: int):
     idFound = False
     for jsonUID in jsonData["hsr"]:
         if uid == jsonUID:
-            data = await hoyouser.hsrNotes(jsonData["hsr"][uid]["ltuid_v2"], jsonData["gi"]["hsr"]["ltoken_v2"], uid)
+            data = await hoyouser.hsrNotes(jsonData["hsr"][uid]["ltuid_v2"], jsonData["hsr"]["ltoken_v2"], uid)
             if data.current_stamina == data.max_stamina:
                 bemTbp = "全回復しました。"
             else:
