@@ -151,13 +151,18 @@ async def daily(interaction: discord.Interaction, game: Literal["gi", "hsr"], ui
     uid = str(uid)
     jsonData = tokendata.open_token()
     idFound = False
+    if game == "gi":
+        embedColor = 0xfffcf3
+    elif game == "hsr":
+        embedColor = 0x7ef6ff
+
     for jsonUID in jsonData[game]:
         if uid == jsonUID:
             name, amount, icon = await hoyouser.daily(game, jsonData[game][uid]["ltuid_v2"], jsonData[game][uid]["ltoken_v2"])
             if "AlreadyClaimed" in str(name):
-                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", timestamp=datetime.now(), color=0x00b0f4)
+                embed = discord.Embed(title="ログインボーナス", description="すでにログインボーナスは受取済みです。", timestamp=datetime.now(), color=embedColor)
             else:
-                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} x{amount}```", timestamp=datetime.now(), color=0x00b0f4)
+                embed = discord.Embed(title="ログインボーナス", description=f"次の報酬を獲得しました！\n```{name} x{amount}```", timestamp=datetime.now(), color=embedColor)
                 embed.set_thumbnail(url=icon)
 
             stat, name, icon = hoyouser.whichloginEnka(game, uid)
@@ -191,7 +196,7 @@ async def resin(interaction: discord.Interaction, uid: int):
                 bemDt = dtNow + timedelta(days=data.remaining_resin_recovery_time.days, seconds=data.remaining_resin_recovery_time.seconds)
                 bemResin = f"{bemDt:%m/%d %H:%M:%S}に全回復"
             embed = discord.Embed(title="天然樹脂情報",
-                                colour=0x00b0f4,
+                                colour=0xfffcf3,
                                 timestamp=datetime.now())
 
             embed.add_field(name="現在の天然樹脂",
@@ -232,7 +237,7 @@ async def tbp(interaction: discord.Interaction, uid: int):
                 bemDt = dtNow + timedelta(days=data.stamina_recover_time.days, seconds=data.stamina_recover_time.seconds)
                 bemTbp = f"{bemDt:%m/%d %H:%M:%S}に全回復"
             embed = discord.Embed(title="開拓力情報",
-                                colour=0x00b0f4,
+                                colour=0x7ef6ff,
                                 timestamp=datetime.now())
 
             embed.add_field(name="現在の開拓力",
