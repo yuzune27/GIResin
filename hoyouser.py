@@ -3,6 +3,7 @@ import asyncio
 from datetime import datetime, timedelta
 import requests
 import json
+import re
 
 
 async def user(ltuid, ltoken):
@@ -99,11 +100,42 @@ async def hsrNotes(ltuid, ltoken, uid):
 
     return data
 
+
+def event():
+
+    def toJst(dt):
+        dt = datetime.strptime(dt, "%Y/%m/%d %H:%M:%S")
+        dtJST = dt + timedelta(hours=1)
+        return dtJST
+
+
+    url = "https://api.ambr.top/assets/data/event.json"
+    resp = requests.get(url).json()
+
+    for r in resp:
+        name = resp[r]["name"]["JP"]
+        descJP = resp[r]["description"]["JP"]
+        pattern = re.compile(r'<t class="t_lc">(.*?)</t>')
+
+        if name == "アップデート詳細":
+            continue
+        getDt = re.findall(pattern, descJP)
+        try:
+            startDt = toJst(getDt[0])
+            try:
+                endDt = toJst(getDt[1])
+            except IndexError:
+                endDt = "より開放"
+        except IndexError:
+            startDt = "常設"
+            endDt = None
+
+        print(name)
+        print(startDt)
+        print(endDt)
+        print()
+
 if __name__ == "__main__":
     print("---Test Space---")
-    with open("config.json", "r", encoding="utf-8") as f:
-        config = json.load(f)
-
-    hoyoID = config["hoyoID"]
-    data = asyncio.run(hsrNotes(hoyoID["ltuid_v2"], hoyoID["ltoken_v2"], hoyoID["uid"][1]))
-    print(data)
+    event()
+    print()
