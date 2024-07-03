@@ -117,18 +117,19 @@ def event():
         descJP = resp[r]["description"]["JP"]
         pattern = re.compile(r'<t class="t_lc">(.*?)</t>')
 
-        if name == "アップデート詳細":
-            continue
         getDt = re.findall(pattern, descJP)
         try:
             startDt = toJst(getDt[0])
-            try:
-                endDt = toJst(getDt[1])
-            except IndexError:
-                endDt = "より開放"
+            endDt = toJst(getDt[1])
         except IndexError:
             startDt = "常設"
             endDt = None
+
+        if name == "アップデート詳細":
+            continue
+        if "紀行" in name:
+            startDt = "アップデート後"
+            endDt = toJst(getDt[0])
 
         print(name)
         print(startDt)
@@ -138,4 +139,4 @@ def event():
 if __name__ == "__main__":
     print("---Test Space---")
     event()
-    print()
+    print("---End---")
